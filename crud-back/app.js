@@ -1,22 +1,36 @@
-import express from "express";
-import morgan from "morgan";
-import cors from "cors";
+// app.js
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const { Cliente } = require('./models'); // Asegúrate de que la ruta a models sea correcta
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-//middlewares 
-app.use(morgan('tiny'));
-app.use(cors());
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(bodyParser.json());
 
-//routes
-app.use('/', require('./routes/auth.routes'))
+// Ruta para obtener todos los clientes
+app.get('/cliente', async (req, res) => {
+  try {
+    const clientes = await Cliente.findAll();
+    res.json(clientes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
+// Ruta para crear un nuevo cliente
+app.post('/clientes', async (req, res) => {
+  try {
+    const { nit, razon, correo, telefono, creado, estado } = req.body;
+    const nuevoCliente = await Cliente.create({ nit, razon, correo, telefono, creado, estado });
+    res.status(201).json(nuevoCliente);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-//settings
-app.set('port' , process.env.PORT || 3000)
-
-app.listen(app.get('port'), ()=> {
-    console.log('Server on port ' + app.get('port') )
-})
+// Iniciar el servidor
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

@@ -1,4 +1,3 @@
-import { default } from './HomeView.vue';
 <template>
   <div class="row mt-3">
     <div class="col-md-6 offset-md-3">
